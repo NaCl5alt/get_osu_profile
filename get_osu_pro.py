@@ -5,6 +5,7 @@ import time
 import sys
 import pprint
 import re
+import os
 
 options = Options()
 options.binary_location = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
@@ -12,7 +13,7 @@ options.add_argument('--headless')
 driver = webdriver.Chrome(chrome_options=options)
 
 def htmlwrite(contents):
-	path="C:\\Users\\kaiouga02jp\\Desktop\\osu_pro\\osu_pro.html"
+	path=os.getcwd()+'\\osu_pro.html'
 	code='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="5; URL="><link rel="stylesheet" type="text/css" href="style.css"><title>osu_pro</title></head><body><div id="content1"><div class="avatar-top"><div class="avatar"></div></div><h1><div id="user_name">'
 	code+=contents[0]
 	code+='</div></h1></div><div id="content2"><div class="ele1">世界ランキング'
@@ -34,13 +35,30 @@ def htmlwrite(contents):
  
 while True:
 	content=[]
+	
+	url="https://osu.ppy.sh/users/"
 
-	driver.get("https://osu.ppy.sh/users/11030197")
+	args = sys.argv
+	arg_len = len(args)
+
+	if arg_len < 2:
+		user="kaiouga02jp"
+		mode="mania"
+	elif arg_len >= 3:
+		mode=args[2]
+		user=args[1]
+	else:
+		mode="mania"
+		user=args[1]
+
+	url+=user+"/"+mode
+
+	driver.get(url)
 
 	html = driver.page_source
 	
 	soup=BeautifulSoup(html,"lxml")
-	tests=soup.find_all("span",attrs={"class":"u-ellipsis-overflow"},text=re.compile("kaiouga02jp"))
+	tests=soup.find_all("span",attrs={"class":"u-ellipsis-overflow"},text=re.compile(user, re.IGNORECASE))
 	for test in tests:
 		content.append(test.string)
 	tests=soup.select('.profile-header__top')
@@ -49,22 +67,9 @@ while True:
 		for test2 in tests2:
 			content.append(test2.contents[0].string)
 			content.append(test2.contents[1].string)
+
 	htmlwrite(content)
 	time.sleep(30)
 	del content
 
 driver.quit()
-
-"""
-kaiouga02jp
-Global Ranking
-#15,810
-Country Ranking
-#985
-Total Play Time
-2d 22h 2m
-Medals
-26
-pp
-3,204
-"""
