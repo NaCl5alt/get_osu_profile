@@ -58,15 +58,15 @@ while True:
 	html = driver.page_source
 	
 	soup=BeautifulSoup(html,"lxml")
-	tests=soup.find_all("span",attrs={"class":"u-ellipsis-overflow"},text=re.compile(user, re.IGNORECASE))
-	for test in tests:
-		content.append(test.string)
-	tests=soup.select('.profile-header__top')
-	for test in tests:
-		tests2=test.select('.value-display')
-		for test2 in tests2:
-			content.append(test2.contents[0].string)
-			content.append(test2.contents[1].string)
+	texts=soup.find_all("span",attrs={"class":"u-ellipsis-overflow"},text=re.compile(user, re.IGNORECASE))
+	for text in texts:
+		content.append(text.string)
+	texts=soup.select('.profile-header__top')
+	for text in texts:
+		texts2=text.select('.value-display')
+		for text2 in texts2:
+			content.append(text2.contents[0].string)
+			content.append(text2.contents[1].string)
 
 	htmlwrite(content)
 	time.sleep(30)
