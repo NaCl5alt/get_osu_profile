@@ -1,6 +1,7 @@
 ﻿from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
+import urllib.request
 import time
 import sys
 import pprint
@@ -12,9 +13,16 @@ options.binary_location = "C:\\Program Files (x86)\\Google\\Chrome\\Application\
 options.add_argument('--headless')
 driver = webdriver.Chrome(chrome_options=options)
 
+def avatarwrite(url):
+	path=os.getcwd()+'\\icon.jpeg'
+	img="icon.jpeg"
+	urllib.request.urlretrieve(url,"{0}".format(img))
+
 def htmlwrite(contents):
 	path=os.getcwd()+'\\osu_pro.html'
-	code='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><meta http-equiv="refresh" content="5; URL="><link rel="stylesheet" type="text/css" href="style.css"><title>osu_pro</title></head><body><div id="content1"><div class="avatar-top"><div class="avatar"></div></div><h1><div id="user_name">'
+	code='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width">'
+	code+='<meta http-equiv="refresh" content="5; URL=">'
+	code+='<link rel="stylesheet" type="text/css" href="style.css"><title>osu_pro</title></head><body><div id="content1"><div class="avatar-top"><div class="avatar"></div></div><h1><div id="user_name">'
 	code+=contents[0]
 	code+='</div></h1></div><div id="content2"><div class="ele1">世界ランキング'
 	code+='</div><div class="ele2">'
@@ -32,7 +40,7 @@ def htmlwrite(contents):
 	code+='</div></div></body></html>'
 	f=open(path,"w",encoding="utf-8-sig")
 	f.write(code)
- 
+
 while True:
 	content=[]
 	
@@ -58,6 +66,12 @@ while True:
 	html = driver.page_source
 	
 	soup=BeautifulSoup(html,"lxml")
+	texts=soup.find_all("div",attrs={"class":"avatar--full"})
+	for text in texts:
+		str_tmp=text.get("style")
+		req="https?://[\w/:%#\$&\?\(\)~\.=\+\-]+"
+		img_url=re.search(req,str_tmp)
+		avatarwrite(img_url.group(0))
 	texts=soup.find_all("span",attrs={"class":"u-ellipsis-overflow"},text=re.compile(user, re.IGNORECASE))
 	for text in texts:
 		content.append(text.string)
